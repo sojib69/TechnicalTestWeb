@@ -1,1 +1,53 @@
-<p>contacts works!</p>
+<div class="row mt-2 mb-3">
+    <div class="col-12">
+        <div class="accordion">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between" id="headingOne">
+                    <h2 class="mb-0">Contacts</h2>
+                </div>
+
+                <div class="collapse show grid">
+                    <div class="card-body">
+                        <div class="custom-kendo-grid custom-row-reverse">
+                            <kendo-grid [data]="gridData" [resizable]="true" [sort]="state.sort" [sortable]="true"
+                                [scrollable]="'scrollable'" [groupable]="false" [group]="state.group"
+                                [pageable]="pageSize" [pageSize]="state.take" [skip]="state.skip">
+                                <kendo-grid-column field="name" title="Name">
+                                </kendo-grid-column>
+                                <kendo-grid-column field="phoneNumber" title="Phone Number">
+                                </kendo-grid-column>
+                                <kendo-grid-column field="contactType" title="Contact Type">
+                                </kendo-grid-column>
+                                <kendo-grid-column field="contactType" title="Contact Type">
+                                    <ng-template kendoGridEditTemplate let-column="column" let-formGroup="fgContactType"
+                                        let-isNew="isNew">
+                                        <input #input class="k-textbox">
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column field="contactGroupName" title="Group">
+                                </kendo-grid-column>
+                                <kendo-grid-column title="Action" [sortable]="false" [filterable]="false"
+                                    class="actions">
+                                    <ng-template kendoGridCellTemplate let-isNew="isNew">
+                                        <button class="kedno-grid-btns" kendoGridEditCommand [disabled]="isDataLoading"
+                                            [primary]="false" title="Edit"> <i class="fas fa-pencil-alt"></i>
+                                        </button>
+                                        <button class="kedno-grid-btns" kendoGridRemoveCommand title="Delete">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                        <button class="kedno-grid-btns" kendoGridSaveCommand [title]="'Save'"><i
+                                                class="fad fa-save"></i></button>
+                                        <button class="kedno-grid-btns" kendoGridCancelCommand
+                                            [disabled]="isDataLoading" [title]="'Cancel'"><i
+                                                class="far fa-times"></i></button>
+                                    </ng-template>
+                                </kendo-grid-column>
+                            </kendo-grid>
+                            <div *ngIf="isDataLoading" class="k-i-loading"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
