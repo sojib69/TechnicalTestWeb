@@ -1,1 +1,40 @@
-<p>contact-groups works!</p>
+<div class="row mt-2 mb-3">
+    <div class="col-12">
+      <div class="accordion">
+        <div class="card shadow">
+          <div class="card-header d-flex justify-content-between" id="headingOne">
+            <h4 class="mb-0 text-center">Contact Groups</h4>
+          </div>
+  
+          <div class="row">
+            <div class="card-body">
+              <div class="mx-2">
+                <button (click)="addNew()" class="btn btn-primary pull-right mb-2" style="float: right;">Add new</button>
+                <table class="table table-bordered">
+                  <thead>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of responseData">
+                      <td>
+                        {{item.id}}
+                      </td>
+                      <td>
+                        {{item.groupName}}
+                      </td>
+                      <td>
+                        <button (click)="remove(item.id)" class="btn btn-primary mr-5"><i class="fa fa-trash"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>

@@ -3,8 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { ContactsComponent } from './pages/contacts/contacts.component';
 import { ContactGroupsComponent } from './pages/contact-groups/contact-groups.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
+import { HomeComponent } from './pages/home/home.component';
 
 const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent
+  },
   {
     path: 'contacts',
     component: ContactsComponent
@@ -12,11 +17,6 @@ const routes: Routes = [
   {
     path: 'contact-groups',
     component: ContactGroupsComponent
-  },
-  {
-    path: '',
-    redirectTo: '/',
-    pathMatch: 'full'
   },
   {
     path: '**',

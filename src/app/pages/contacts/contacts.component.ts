@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { GridDataResult } from '@progress/kendo-angular-grid';
-import { DataSourceRequestState } from '@progress/kendo-data-query';
-import { ModuleConstants } from 'src/app/core/constants/constants';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Contact } from 'src/app/Models/contact';
 import { ContactsService } from 'src/app/services/contacts.service';
 
@@ -13,42 +10,44 @@ import { ContactsService } from 'src/app/services/contacts.service';
 })
 export class ContactsComponent implements OnInit {
 
-  public gridData!: GridDataResult;
   public isDataLoading = false;
-  public pageSize: any = false;
-  state: DataSourceRequestState = {
-    skip: 0,
-    take: ModuleConstants.kendoGridDefaultTake_20,
-  };
-  requiredValidation: any;
   fgContactType!: FormGroup;
+  responseData: Contact[] = [];
 
-  constructor(public contactsApiService: ContactsService,) { }
+  constructor(public contactsApiService: ContactsService, private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.getAllContacts();
   }
 
   getAllContacts(): void {
+    this.isDataLoading = true;
     this.contactsApiService.getAllContacts().subscribe({
       next: (resp) => {
         const dataList = resp;
-        const listData: Contact[] = dataList;
-        this.populateGrid(listData);
+        this.responseData = dataList;
+        this.isDataLoading = false;
       },
       error: (e) => {
+        this.isDataLoading = false;
         console.log(e);
       },
       complete: () => console.info('complete')
     });
   }
 
-  /**
-   * Populates grid with data
-   * @param dataList : data array
-   */
-  private populateGrid(dataList: any) {
-    this.gridData = dataList;
+  addNew() {
+    
+  }
+
+  remove(index: number) {
+    const control = <FormArray>this.fgContactType.get('contacts');
+    control.removeAt(index);
+  }
+
+  save() {
+    console.log('isValid', this.fgContactType.valid);
+    console.log('value', this.fgContactType.value);
   }
 
 }
