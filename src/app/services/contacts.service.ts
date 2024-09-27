@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Type':  'application/json',
+    'Content-Type': 'application/json',
     'Authorization': 'jwt-token'
   })
 };
@@ -26,28 +26,28 @@ export class ContactsService {
   }
 
   getAllContacts(): Observable<any> {
-    return this.http.get<Contact[]>(environment.apiUrl+'Contacts/GetAllContacts').pipe(
+    return this.http.get<Contact[]>(environment.apiUrl + 'Contacts/GetAllContacts').pipe(
       retry(3), catchError(this.handleError<Contact[]>('getAllContacts', [])));
   }
 
   addContact(contact: Contact): Observable<Contact> {
-    return this.http.post<Contact>(environment.apiUrl, contact, httpOptions)
+    return this.http.post<Contact>(environment.apiUrl + 'Contacts/AddContact', contact, httpOptions)
       .pipe(
         catchError(this.handleError('addContact', contact))
       );
   }
 
   editContact(contact: Contact): Observable<Contact> {
-    return this.http.put<Contact>(environment.apiUrl, contact, httpOptions)
+    return this.http.put<Contact>(environment.apiUrl + 'Contacts/EditContact', contact, httpOptions)
       .pipe(
         catchError(this.handleError('editContact', contact))
       );
   }
 
-  deleteContact(contact: Contact): Observable<Contact> {
-    return this.http.delete<Contact>(environment.apiUrl, httpOptions)
+  deleteContact(id: number): Observable<{}> {
+    return this.http.delete(environment.apiUrl + 'Contacts/DeleteContact/' + id, httpOptions)
       .pipe(
-        catchError(this.handleError('deleteContact', contact))
+        catchError(this.handleError('deleteContact', id))
       );
   }
 

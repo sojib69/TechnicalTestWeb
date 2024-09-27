@@ -9,39 +9,72 @@
         <div class="row">
           <div class="card-body">
             <div class="mx-2">
-              <button (click)="addNew()" class="btn btn-primary float-right mb-2" style="float: right;">Add new</button>
-              <table class="table table-bordered">
-                <thead>
-                  <th>Id</th>
-                  <th>Name</th>
-                  <th>Phone Number</th>
-                  <th>Contact Type</th>
-                  <th>Group</th>
-                  <th>Actions</th>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let item of responseData">
-                    <td>
-                      {{item.id}}
-                    </td>
-                    <td>
-                      {{item.name}}
-                    </td>
-                    <td>
-                      {{item.phoneNumber}}
-                    </td>
-                    <td>
-                      {{item.contactType}}
-                    </td>
-                    <td>
-                      {{item.contactGroupName}}
-                    </td>
-                    <td>
-                      <button (click)="remove(item.id)" class="btn btn-primary mr-5"><i class="fa fa-trash"></i></button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <button (click)="addNew()" class="btn btn-primary float-right mb-2" style="float: right;">Add New</button>
+              <form [formGroup]="fgContactType" #form="ngForm">
+                <table class="table table-bordered">
+                  <thead>
+                    <th width="5%">Id</th>
+                    <th width="20%">Name</th>
+                    <th width="20%">Phone Number</th>
+                    <th width="20%">Contact Type</th>
+                    <th width="20%">Group</th>
+                    <th width="15%" class="text-center">Actions</th>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="isAddingNewData">
+                      <td></td>
+                      <td>
+                        <input class="form-control" type="text" formControlName="name"
+                          [class.is-invalid]="fgContactType.get('name')?.invalid && (fgContactType.get('name')?.dirty || fgContactType.get('name')?.touched)">
+                      </td>
+                      <td>
+                        <input class="form-control" formControlName="phoneNumber"
+                          [class.is-invalid]="fgContactType.get('phoneNumber')?.invalid && (fgContactType.get('phoneNumber')?.dirty || fgContactType.get('phoneNumber')?.touched)">
+                      </td>
+                      <td>
+                        <input class="form-control" formControlName="contactType"
+                          [class.is-invalid]="fgContactType.get('contactType')?.invalid && (fgContactType.get('contactType')?.dirty || fgContactType.get('contactType')?.touched)">
+                      </td>
+                      <td>
+                        <select class="form-select" aria-label="Default select example" formControlName="contactGroupId"
+                          [class.is-invalid]="fgContactType.get('contactGroupId')?.invalid && (fgContactType.get('contactGroupId')?.dirty || fgContactType.get('contactGroupId')?.touched)">
+                          <option selected value="">-- Select --</option>
+                          <option *ngFor="let item of contactGroupsData" [ngValue]="item.id">{{item.groupName}}
+                          </option>
+                        </select>
+                      </td>
+                      <td class="text-center">
+                        <button type="button" (click)="save()" [disabled]="fgContactType.invalid"
+                          class="btn btn-sm btn-primary me-2"><i class="fas fa-save"></i></button>
+                        <button (click)="discard()" class="btn btn-sm btn-danger"><i class="fas fa-cancel"></i></button>
+                      </td>
+                    </tr>
+                    <tr *ngFor="let item of responseData">
+                      <td>
+                        {{item.id}}
+                      </td>
+                      <td>
+                        {{item.name}}
+                      </td>
+                      <td>
+                        {{item.phoneNumber}}
+                      </td>
+                      <td>
+                        {{item.contactType}}
+                      </td>
+                      <td>
+                        {{item.contactGroupName}}
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-primary me-2" [class.disabled]="isAddingNewData"><i
+                            class="fas fa-edit"></i></button>
+                        <button (click)="delete(item.id)" type="button" class="btn btn-sm btn-danger" [class.disabled]="isAddingNewData"><i
+                            class="fas fa-trash"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
             </div>
           </div>
         </div>
@@ -49,4 +82,12 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="spinner" *ngIf="isDataLoading">
+  <div class="rect1"></div>
+  <div class="rect2"></div>
+  <div class="rect3"></div>
+  <div class="rect4"></div>
+  <div class="rect5"></div>
 </div>

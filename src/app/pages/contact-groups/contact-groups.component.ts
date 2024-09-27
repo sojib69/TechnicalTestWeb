@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContactGroup } from 'src/app/Models/contact-group';
 import { ContactGroupsService } from 'src/app/services/contact-groups.service';
 
@@ -11,16 +11,17 @@ import { ContactGroupsService } from 'src/app/services/contact-groups.service';
 export class ContactGroupsComponent implements OnInit {
 
   public isDataLoading = false;
-  fgContactType!: FormGroup;
+  public isAddingNewData = false;
+  fgContactGroup!: FormGroup;
   responseData: ContactGroup[] = [];
 
-  constructor(public contactGroupsApiService: ContactGroupsService) { }
+  constructor(public contactGroupsApiService: ContactGroupsService, private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
-    this.getAllContacts();
+    this.getAllContactGroups();
   }
 
-  getAllContacts(): void {
+  getAllContactGroups(): void {
     this.isDataLoading = true;
     this.contactGroupsApiService.getAllContactGroups().subscribe({
       next: (resp) => {
@@ -37,17 +38,36 @@ export class ContactGroupsComponent implements OnInit {
   }
 
   addNew() {
-    
+    this.createFormGroup();
+    this.isAddingNewData = true;
   }
 
-  remove(index: number) {
-    const control = <FormArray>this.fgContactType.get('contacts');
-    control.removeAt(index);
+  discard() {
+    this.isAddingNewData = false;
+  }
+
+  createFormGroup() {
+    this.fgContactGroup = this.formBuilder.group({
+      groupName: ['', Validators.required]
+    });
   }
 
   save() {
-    console.log('isValid', this.fgContactType.valid);
-    console.log('value', this.fgContactType.value);
+    if (this.fgContactGroup.valid) {
+      this.isDataLoading = true;
+      const newContactGroup = this.fgContactGroup.value;
+      this.contactGroupsApiService.addContactGroup(newContactGroup).subscribe({
+        next: (resp) => {
+          this.getAllContactGroups();
+          this.isAddingNewData = false;
+        },
+        error: (e) => {
+          this.isDataLoading = false;
+          alert(e);
+          console.log(e);
+        }
+      });
+    }
   }
 
 }

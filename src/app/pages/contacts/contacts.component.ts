@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Contact } from 'src/app/Models/contact';
+import { ContactGroup } from 'src/app/Models/contact-group';
+import { ContactGroupsService } from 'src/app/services/contact-groups.service';
 import { ContactsService } from 'src/app/services/contacts.service';
 
 @Component({
@@ -11,13 +13,32 @@ import { ContactsService } from 'src/app/services/contacts.service';
 export class ContactsComponent implements OnInit {
 
   public isDataLoading = false;
+  public isAddingNewData = false;
   fgContactType!: FormGroup;
   responseData: Contact[] = [];
+  contactGroupsData: ContactGroup[] = [];
+  contact!: Contact;
 
-  constructor(public contactsApiService: ContactsService, private formBuilder: FormBuilder) { }
+  constructor(public contactsApiService: ContactsService,
+    public contactGroupsApiService: ContactGroupsService,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.getAllContacts();
+    this.getAllContactGroups();
+  }
+
+  getAllContactGroups(): void {
+    this.isDataLoading = true;
+    this.contactGroupsApiService.getAllContactGroups().subscribe({
+      next: (resp) => {
+        const dataList = resp;
+        this.contactGroupsData = dataList;
+      },
+      error: (e) => {
+        console.log(e);
+      }
+    });
   }
 
   getAllContacts(): void {
@@ -31,23 +52,58 @@ export class ContactsComponent implements OnInit {
       error: (e) => {
         this.isDataLoading = false;
         console.log(e);
-      },
-      complete: () => console.info('complete')
+      }
     });
   }
 
   addNew() {
-    
+    this.createFormGroup();
+    this.isAddingNewData = true;
   }
 
-  remove(index: number) {
-    const control = <FormArray>this.fgContactType.get('contacts');
-    control.removeAt(index);
+  discard() {
+    this.isAddingNewData = false;
+  }
+
+  createFormGroup() {
+    this.fgContactType = this.formBuilder.group({
+      name: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
+      contactType: ['', Validators.required],
+      contactGroupId: ['', [Validators.required, Validators.min(1)]],
+    });
   }
 
   save() {
-    console.log('isValid', this.fgContactType.valid);
-    console.log('value', this.fgContactType.value);
+    if (this.fgContactType.valid) {
+      this.isDataLoading = true;
+      const newContact = this.fgContactType.value;
+      this.contactsApiService.addContact(newContact).subscribe({
+        next: (resp) => {
+          this.getAllContacts();
+          this.isAddingNewData = false;
+        },
+        error: (e) => {
+          this.isDataLoading = false;
+          alert(e);
+          console.log(e);
+        }
+      });
+    }
+  }
+
+  delete(id: number) {
+    debugger;
+    this.isDataLoading = true;
+    this.contactsApiService.deleteContact(id).subscribe({
+      next: (resp) => {
+        this.getAllContacts();
+      },
+      error: (e) => {
+        alert(e);
+        console.log(e);
+      }
+    });
   }
 
 }
