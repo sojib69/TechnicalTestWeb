@@ -14,6 +14,7 @@ export class ContactsComponent implements OnInit {
 
   public isDataLoading = false;
   public isAddingNewData = false;
+  public isEditingData = false;
   fgContactType!: FormGroup;
   responseData: Contact[] = [];
   contactGroupsData: ContactGroup[] = [];
@@ -65,8 +66,9 @@ export class ContactsComponent implements OnInit {
     this.isAddingNewData = false;
   }
 
-  createFormGroup() {
+  createFormGroup(id: number = 0) {
     this.fgContactType = this.formBuilder.group({
+      id: [id],
       name: ['', Validators.required],
       phoneNumber: ['', Validators.required],
       contactType: ['', Validators.required],
@@ -82,6 +84,33 @@ export class ContactsComponent implements OnInit {
         next: (resp) => {
           this.getAllContacts();
           this.isAddingNewData = false;
+        },
+        error: (e) => {
+          this.isDataLoading = false;
+          alert(e);
+          console.log(e);
+        }
+      });
+    }
+  }
+
+  editRow(id: number) {
+    this.createFormGroup(id);
+    this.isEditingData = true;
+  }
+
+  discardEdit() {
+    this.isEditingData = false;
+  }
+
+  edit() {
+    if (this.fgContactType.get('contactType')?.valid) {
+      this.isDataLoading = true;
+      const newContact = this.fgContactType.value;
+      this.contactsApiService.editContact(newContact).subscribe({
+        next: (resp) => {
+          this.getAllContacts();
+          this.isEditingData = false;
         },
         error: (e) => {
           this.isDataLoading = false;

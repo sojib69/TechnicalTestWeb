@@ -9,7 +9,7 @@
         <div class="row">
           <div class="card-body">
             <div class="mx-2">
-              <button (click)="addNew()" class="btn btn-primary float-right mb-2" style="float: right;">Add New</button>
+              <button (click)="addNew()" [class.disabled]="isEditingData" class="btn btn-primary float-right mb-2" style="float: right;">Add New</button>
               <form [formGroup]="fgContactType" #form="ngForm">
                 <table class="table table-bordered">
                   <thead>
@@ -60,16 +60,28 @@
                         {{item.phoneNumber}}
                       </td>
                       <td>
-                        {{item.contactType}}
+                        <div *ngIf="isEditingData === false">
+                          {{item.contactType}}
+                        </div>
+                        <div *ngIf="isEditingData">
+                          <input class="form-control" formControlName="contactType" placeholder="Enter contact Type"
+                            [class.is-invalid]="fgContactType.get('contactType')?.invalid && (fgContactType.get('contactType')?.dirty || fgContactType.get('contactType')?.touched)">
+                        </div>
                       </td>
                       <td>
                         {{item.contactGroupName}}
                       </td>
                       <td class="text-center">
-                        <button class="btn btn-sm btn-primary me-2" [class.disabled]="isAddingNewData"><i
+                        <button type="button" (click)="editRow(item.id)" *ngIf="isEditingData === false"
+                          class="btn btn-sm btn-primary me-2" [class.disabled]="isAddingNewData"><i
                             class="fas fa-edit"></i></button>
-                        <button (click)="delete(item.id)" type="button" class="btn btn-sm btn-danger" [class.disabled]="isAddingNewData"><i
+                        <button type="button" (click)="delete(item.id)" *ngIf="isEditingData === false" type="button"
+                          class="btn btn-sm btn-danger" [class.disabled]="isAddingNewData"><i
                             class="fas fa-trash"></i></button>
+                        <button type="button" (click)="edit()" *ngIf="isEditingData" [disabled]="fgContactType.get('contactType')?.invalid"
+                          class="btn btn-sm btn-primary me-2"><i class="fas fa-save"></i></button>
+                        <button type="button" (click)="discardEdit()" *ngIf="isEditingData" class="btn btn-sm btn-danger"><i
+                            class="fas fa-cancel"></i></button>
                       </td>
                     </tr>
                   </tbody>
